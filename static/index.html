@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Travesseiro Nervoso</title>
+    <style>
+        /* ====== Configurações gerais da página ====== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe4c4 100%);
+            color: #4a2c1b;
+            line-height: 1.6;
+            /* Fundo com "travesseiros" desenhados (bolinhas) pra dar clima de hotel */
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.6) 0, rgba(255,255,255,0.6) 12px, transparent 13px),
+                radial-gradient(circle at 80% 60%, rgba(255,255,255,0.5) 0, rgba(255,255,255,0.5) 9px, transparent 10px);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ====== Cabeçalho ====== */
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #6d3b2f, #8f4d3a);
+            color: #fff8ef;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            font-size: 2.6rem;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+
+        /* ====== Seções ====== */
+        section {
+            background: #fffdf7;
+            border-radius: 20px;
+            padding: 28px;
+            margin: 28px 0;
+            box-shadow: 0 4px 18px rgba(109, 59, 47, 0.12);
+        }
+
+        section h2 {
+            color: #6d3b2f;
+            font-size: 1.7rem;
+            margin-bottom: 18px;
+            border-bottom: 3px dashed #e8c9a3;
+            padding-bottom: 10px;
+        }
+
+        /* ====== Quartos ====== */
+        .quartos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            justify-content: center;
+        }
+
+        .quarto {
+            flex: 1 1 240px;
+            max-width: 280px;
+            background: #fff;
+            border: 2px solid #e8c9a3;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .quarto:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 22px rgba(109, 59, 47, 0.18);
+        }
+
+        .quarto .icone {
+            font-size: 2.4rem;
+        }
+
+        .quarto h3 {
+            color: #6d3b2f;
+            margin: 8px 0;
+        }
+
+        .quarto .preco {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #8f4d3a;
+        }
+
+        /* ====== Serviços ====== */
+        .servicos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .servico {
+            background: #fcecd6;
+            border-radius: 30px;
+            padding: 10px 22px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #6d3b2f;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ====== Formulário de Reserva ====== */
+        form#formReserva {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        form#formReserva label {
+            display: flex;
+            flex-direction: column;
+            font-weight: 600;
+            gap: 6px;
+            color: #6d3b2f;
+        }
+
+        form#formReserva input,
+        form#formReserva select {
+            padding: 10px 12px;
+            border: 2px solid #e8c9a3;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: #fff;
+            color: #4a2c1b;
+        }
+
+        form#formReserva input:focus,
+        form#formReserva select:focus {
+            outline: none;
+            border-color: #8f4d3a;
+        }
+
+        #btnReservar {
+            grid-column: 1 / -1;
+            background: #8f4d3a;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        #btnReservar:hover {
+            background: #6d3b2f;
+        }
+
+        #msgReserva {
+            grid-column: 1 / -1;
+            text-align: center;
+            font-weight: bold;
+            min-height: 24px;
+            color: #2e7d32;
+        }
+
+        /* ====== Reservas confirmadas ====== */
+        #listaReservas {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #listaReservas li {
+            background: #fcecd6;
+            border-left: 6px solid #8f4d3a;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 1rem;
+        }
+
+        #listaReservas li .reserva-nome {
+            font-weight: bold;
+            color: #6d3b2f;
+        }
+
+        #listaReservas li .reserva-quarto {
+            color: #8f4d3a;
+            font-weight: 600;
+        }
+
+        #listaReservas li .reserva-datas {
+            display: block;
+            color: #7a5c4a;
+            font-size: 0.92rem;
+            margin-top: 4px;
+        }
+
+        .vazio {
+            color: #a08070;
+            font-style: italic;
+        }
+
+        /* ====== Chat ====== */
+        .chat-wrapper {
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #e8c9a3;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #fff;
+            height: 440px;
+            max-height: 60vh;
+        }
+
+        .chat-header {
+            background: #6d3b2f;
+            color: #fff8ef;
+            padding: 12px 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #chat-historico {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #fdf6ec;
+        }
+
+        .msg {
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        /* Hóspede à direita... */
+        .msg.hospede {
+            align-self: flex-end;
+            background: #8f4d3a;
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* Hotel à esquerda... */
+        .msg.hotel {
+            align-self: flex-start;
+            background: #eee1ce;
+            color: #4a2c1b;
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg.digitando {
+            align-self: flex-start;
+            background: #eee1ce;
+            color: #8f7a6a;
+            font-style: italic;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            background: #fff;
+            border-top: 2px solid #e8c9a3;
+        }
+
+        #chat-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid #e8c9a3;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        #chat-input:focus {
+            outline: none;
+            border-color: #8f4d3a;
+        }
+
+        #btnEnviar {
+            background: #8f4d3a;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #btnEnviar:hover {
+            background: #6d3b2f;
+        }
+
+        /* ====== Rodapé ====== */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #8f7a6a;
+        }
+
+        /* ====== Responsividade ====== */
+        @media (max-width: 640px) {
+            form#formReserva {
+                grid-template-columns: 1fr;
+            }
+            #btnReservar {
+                grid-column: 1;
+            }
+            header h1 {
+                font-size: 1.9rem;
+            }
+            .chat-wrapper {
+                height: 420px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== Cabeçalho do hotel ====== -->
+    <header>
+        <h1>🛏️ Hotel Travesseiro Nervoso</h1>
+        <p>"Aqui até a insônia dorme"</p>
+    </header>
+
+    <main class="container">
+
+        <!-- ====== Seção de quartos e preços ====== -->
+        <section id="quartos">
+            <h2>🛌 Nossos Quartos</h2>
+            <div class="quartos">
+                <div class="quarto">
+                    <div class="icone">🛏️</div>
+                    <h3>Standard</h3>
+                    <p>Conforto básico para cochilos tranquilos.</p>
+                    <div class="preco">$400</div>
+                </div>
+                <div class="quarto">
+                    <div class="icone">🛎️</div>
+                    <h3>Deluxe</h3>
+                    <p>Mais espaço, mais soninho, mais felicidade.</p>
+                    <div class="preco">$600</div>
+                </div>
+                <div class="quarto">
+                    <div class="icone">👑</div>
+                    <h3>Suíte Presidencial</h3>
+                    <p>O trono perfeito para a rainha do sono.</p>
+                    <div class="preco">$1000</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== Seção de serviços ====== -->
+        <section id="servicos">
+            <h2>✨ Nossos Serviços</h2>
+            <div class="servicos">
+                <span class="servico">🏋️ Academia</span>
+                <span class="servico">🥐 Café da Manhã</span>
+                <span class="servico">🧺 Lavanderia</span>
+                <span class="servico">🍽️ Restaurante</span>
+                <span class="servico">🏊 Piscina</span>
+            </div>
+        </section>
+
+        <!-- ====== Formulário de reserva ====== -->
+        <section id="reserva">
+            <h2>📅 Faça sua reserva</h2>
+            <form id="formReserva">
+                <label>
+                    Nome
+                    <input type="text" id="campoNome" placeholder="Seu nome" required>
+                </label>
+                <label>
+                    Quarto
+                    <select id="campoQuarto" required>
+                        <option value="Standard">Standard</option>
+                        <option value="Deluxe">Deluxe</option>
+                        <option value="Suíte Presidencial">Suíte Presidencial</option>
+                    </select>
+                </label>
+                <label>
+                    Check-in
+                    <input type="date" id="campoCheckin" required>
+                </label>
+                <label>
+                    Check-out
+                    <input type="date" id="campoCheckout" required>
+                </label>
+                <button type="submit" id="btnReservar">Reservar</button>
+                <div id="msgReserva"></div>
+            </form>
+        </section>
+
+        <!-- ====== Reservas confirmadas ====== -->
+        <section id="confirmadas">
+            <h2>✅ Reservas confirmadas</h2>
+            <ul id="listaReservas">
+                <li class="vazio">Carregando...</li>
+            </ul>
+        </section>
+
+        <!-- ====== Chat com o atendente virtual ====== -->
+        <section id="chat">
+            <h2>💬 Fale com o atendente virtual</h2>
+            <div class="chat-wrapper">
+                <div class="chat-header">Atendente - Hotel Travesseiro Nervoso</div>
+                <div id="chat-historico"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Escreva sua mensagem..." autocomplete="off">
+                    <button id="btnEnviar">Enviar</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        Hotel Travesseiro Nervoso &copy; 2026 — Durma bem, sempre.
+    </footer>
+
+    <script>
+        // =====================================================
+        // Referências dos elementos da página (pra facilitar)
+        // =====================================================
+        const formReserva = document.getElementById('formReserva');
+        const campoNome = document.getElementById('campoNome');
+        const campoQuarto = document.getElementById('campoQuarto');
+        const campoCheckin = document.getElementById('campoCheckin');
+        const campoCheckout = document.getElementById('campoCheckout');
+        const msgReserva = document.getElementById('msgReserva');
+        const listaReservas = document.getElementById('listaReservas');
+
+        const chatHistorico = document.getElementById('chat-historico');
+        const chatInput = document.getElementById('chat-input');
+        const btnEnviar = document.getElementById('btnEnviar');
+
+        // =====================================================
+        // Helper para criar elemento "p" de mensagem no chat
+        // =====================================================
+        function criarMensagem(texto, tipo) {
+            const p = document.createElement('p');
+            p.classList.add('msg', tipo); // tipo = 'hospede' ou 'hotel'
+            // Para mensagens do HOTEL, transformamos o markdown em HTML
+            // (ex: **negrito** vira <strong>). Para o hóspede, mantém o texto puro.
+            if (tipo === 'hotel') {
+                p.innerHTML = markdownParaHtml(texto);
+            } else {
+                p.textContent = texto;
+            }
+            chatHistorico.appendChild(p);
+            chatHistorico.scrollTop = chatHistorico.scrollHeight; // rola até o fim
+            return p;
+        }
+
+        // Converte o básico de markdown para HTML, pra exibir sem os **.
+        // Regras simples: **negrito**, *itálico*, `código`, #títulos e -listas.
+        function markdownParaHtml(texto) {
+            if (!texto) return texto;
+            // Escapa os caracteres < e > para evitar HTML malicioso
+            texto = texto.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            // Quebra o texto em linhas para tratar cada uma
+            const linhas = texto.split('\n').map(function (linha) {
+                // Títulos: "# " no início vira negrito grande
+                linha = linha.replace(/^#{1,6}\s+(.*)$/, '<strong>$1</strong>');
+                // Lista: "- " no início vira item com bolinha
+                linha = linha.replace(/^\s*[-*]\s+(.*)$/, '• $1');
+                return linha;
+            });
+            let html = linhas.join('<br>');
+            // Negrito **texto**
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            // Itálico *texto* (um único asterisco)
+            html = html.replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>');
+            // Código inline `texto`
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            return html;
+        }
+
+        // =====================================================
+        // CHAT COM O ATENDENTE VIRTUAL
+        // Envia POST /agente com {"pergunta": texto} e exibe o
+        // campo "resposta" do JSON que voltar.
+        // =====================================================
+        async function enviarParaChat() {
+            const texto = chatInput.value.trim();
+            if (!texto) return; // não envia mensagem vazia
+
+            // Mostra a mensagem do hóspede (à direita)
+            criarMensagem(texto, 'hospede');
+            chatInput.value = '';
+            chatInput.focus();
+
+            // Mostra o indicador de "digitando..." (à esquerda)
+            const digitando = criarMensagem('Digitando...', 'digitando');
+
+            try {
+                // Faz a requisição POST para a rota /agente (URL relativa)
+                const resposta = await fetch('/agente', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pergunta: texto })
+                });
+
+                const dados = await resposta.json();
+
+                // Remove o indicador "digitando..." e mostra a resposta do hotel
+                digitando.remove();
+                // O campo que tem a resposta se chama "resposta"
+                criarMensagem(dados.resposta || 'Ops! Não entendi. Tente de novo.', 'hotel');
+            } catch (erro) {
+                // Se der erro, remove o "digitando..." e avisa o hóspede
+                digitando.remove();
+                criarMensagem('Desculpe, não consegui falar com o atendente agora. 😴', 'hotel');
+            }
+        }
+
+        // Envio pelo botão
+        btnEnviar.addEventListener('click', enviarParaChat);
+
+        // Envio pela tecla Enter
+        chatInput.addEventListener('keydown', function (evento) {
+            if (evento.key === 'Enter') {
+                evento.preventDefault(); // evita o comportamento padrão
+                enviarParaChat();
+            }
+        });
+
+        // =====================================================
+        // RESERVAS
+        // 1) Enviar reserva via POST /reservas
+        // 2) Carregar reservas via GET /reservas
+        // =====================================================
+
+        // Função que converte uma data "AAAA-MM-DD" para "DD/MM/AAAA"
+        function formatarData(data) {
+            if (!data) return '-'; // se não tiver data, mostra um traço
+            // Divide a string pelos traços: [ano, mes, dia]
+            const partes = String(data).split('-');
+            if (partes.length !== 3) return data; // se o formato for outro, devolve como está
+            // Monta na ordem dia/mês/ano
+            return partes[2] + '/' + partes[1] + '/' + partes[0];
+        }
+
+        // Função para desenhar a lista de reservas na tela
+        function renderizarReservas(reservas) {
+            // Limpa a lista atual
+            listaReservas.innerHTML = '';
+
+            if (!reservas || reservas.length === 0) {
+                // Se não houver reservas, mostra uma mensagem amigável
+                const li = document.createElement('li');
+                li.className = 'vazio';
+                li.textContent = 'Nenhuma reserva confirmada ainda.';
+                listaReservas.appendChild(li);
+                return;
+            }
+
+            // Para cada reserva, cria um item na lista com nome, quarto e datas
+            reservas.forEach(function (reserva) {
+                const li = document.createElement('li');
+
+                const nome = document.createElement('span');
+                nome.className = 'reserva-nome';
+                nome.textContent = reserva.nome;
+
+                const quarto = document.createElement('span');
+                quarto.className = 'reserva-quarto';
+                quarto.textContent = ' — ' + reserva.quarto;
+
+                const datas = document.createElement('span');
+                datas.className = 'reserva-datas';
+                // Exibe as datas no formato dia/mês/ano (ex: 05/09/2026)
+                datas.textContent = 'Check-in: ' + formatarData(reserva.checkin) +
+                                    ' • Check-out: ' + formatarData(reserva.checkout);
+
+                li.appendChild(nome);
+                li.appendChild(quarto);
+                li.appendChild(datas);
+                listaReservas.appendChild(li);
+            });
+        }
+
+        // Função que busca as reservas salvas no banco (GET /reservas)
+        async function carregarReservas() {
+            try {
+                const resposta = await fetch('/reservas');
+                const dados = await resposta.json();
+                renderizarReservas(dados);
+            } catch (erro) {
+                // Se não conseguir carregar, avisa na lista
+                listaReservas.innerHTML = '';
+                const li = document.createElement('li');
+                li.className = 'vazio';
+                li.textContent = 'Não foi possível carregar as reservas.';
+                listaReservas.appendChild(li);
+            }
+        }
+
+        // Envio do formulário de reserva (POST /reservas)
+        formReserva.addEventListener('submit', async function (evento) {
+            evento.preventDefault(); // evita recarregar a página
+
+            // Monta o objeto com os dados digitados no formulário
+            const dadosReserva = {
+                nome: campoNome.value,
+                quarto: campoQuarto.value,
+                checkin: campoCheckin.value,
+                checkout: campoCheckout.value
+            };
+
+            try {
+                const resposta = await fetch('/reservas', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dadosReserva)
+                });
+
+                const dados = await resposta.json();
+
+                // Mostra a mensagem que voltou do servidor
+                msgReserva.textContent = dados.mensagem || 'Reserva realizada!';
+                msgReserva.style.color = '#2e7d32';
+
+                // Limpa o formulário para uma nova reserva
+                formReserva.reset();
+
+                // Atualiza a lista de reservas confirmadas
+                carregarReservas();
+            } catch (erro) {
+                // Se der erro, mostra uma mensagem de problema
+                msgReserva.textContent = 'Erro ao fazer a reserva. Tente novamente.';
+                msgReserva.style.color = '#c62828';
+            }
+        });
+
+        // =====================================================
+        // Ao abrir a página, carrega as reservas confirmadas
+        // =====================================================
+        carregarReservas();
+    </script>
+</body>
+</html>
