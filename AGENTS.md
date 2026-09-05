@@ -1,32 +1,20 @@
-# AGENTS.md — Agente Hotel (Persistência)
+# Agente Hotel (Persistência)
 
-## Stack Principal
-- Linguagem: Python
-- Frameworks: Agno, Openai, Flask, Flask-Cors, Supabase
-- Front-End: HTML, CSS e JS (arquivo único em `static/index.html`)
+## Comandos
+- Use o Python do ambiente local; `python` não está disponível no PATH: `.venv\Scripts\python.exe`.
+- Instale as dependências com `.venv\Scripts\python.exe -m pip install -r requirements.txt`.
+- Inicie o servidor com `.venv\Scripts\python.exe app.py` e acesse `http://localhost:8000/`.
+- Não use a porta padrão 5000: `app.py` escuta em `0.0.0.0:8000` com debug habilitado.
+- Não há testes, linter, typecheck ou CI configurados; valide mudanças iniciando o servidor e exercitando o fluxo afetado.
 
-## Como rodar
-- Ambiente virtual local: `.venv\Scripts\python.exe` (Python 3.14). `python` NÃO está no PATH do sistema — use o executável do venv.
-- Subir o servidor: `.venv\Scripts\python.exe app.py`
-- O app roda na porta **8000** (`app.run(port=8000, host="0.0.0.0", debug=True)`) — não na porta padrão 5000 do Flask.
-- Acessar o front-end em `http://localhost:8000/` (servido via `send_static_file("index.html")`).
+## Estrutura e contratos
+- O backend inteiro está em `app.py`; o front-end é um único arquivo em `static/index.html` servido pela rota `GET /`.
+- `app.py` carrega as variáveis `SUPABASE_URL` e `SUPABASE_KEY` do ambiente via `load_dotenv()` e usa a tabela Supabase `reservas`.
+- `POST /perguntar` recebe `{"pergunta": ...}` e retorna `{"mensagem": ...}`; `POST /agente` usa o mesmo payload, mas retorna `{"resposta": ...}` e é a rota usada pelo chat do front-end.
+- `POST /reserva` e `POST /reservas` inserem o JSON recebido em `reservas`; `GET /reservas` retorna a lista de registros.
+- O formulário envia e a tela renderiza os campos `nome`, `quarto`, `checkin` e `checkout`.
 
-## Arquitetura (backend em `app.py`)
-- `supabase` client criado no topo usando `SUPABASE_URL` / `SUPABASE_KEY` do `.env` via `load_dotenv()`.
-- Rotas:
-  - `POST /perguntar` e `POST /agente` → resposta do Agno (chave JSON `resposta`)
-  - `POST /reserva` e `POST /reservas` → insere no Supabase na tabela `reservas`
-  - `GET /reservas` → lista registros da tabela `reservas`
-- Não há `requirements.txt`, testes, linter ou CI configurados. Dependências instaladas no `.venv`.
-
-## Railguards (não quebrar)
-- Não alterar a lógica do projeto.
-- Não alterar nem criar arquivos sem pedir permissão.
-- Não instalar bibliotecas desnecessárias.
-- Não expor nem ler arquivos `.env` e `.gitignore`.
-- Não alterar a `description` do agente do hotel (contém preços/serviços que a IA usa).
-- Não alterar a estrutura de rotas do Flask nem as chaves dos JSON de retorno (o JS de `static/index.html` depende delas).
-
-## Preferências
-- Responder sempre em PT-BR.
-- Colocar comentários no código, facilitando a leitura para um programador iniciante (e para releitura futura).
+## Cuidados
+- Preserve as rotas e as chaves JSON acima: `static/index.html` depende desse contrato.
+- Preserve a `description` do agente em `app.py`, pois ela contém os preços e serviços usados nas respostas.
+- Não exponha valores de credenciais nem altere arquivos de ambiente ao investigar ou modificar o projeto.

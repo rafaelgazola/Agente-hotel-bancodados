@@ -1,7 +1,7 @@
 from agno.models.openai import OpenAIChat
 from agno.agent import Agent
 from dotenv import load_dotenv
-from flask import Flask,jsonify,request
+from flask import Flask,jsonify,request,send_from_directory
 from flask_cors import CORS 
 from supabase import create_client
 import os
@@ -24,6 +24,10 @@ agente = Agent(
 @app.route("/",methods=['GET'])
 def testar_agente():
     return app.send_static_file("index.html")
+
+@app.route("/imagens/<path:nome_arquivo>",methods=['GET'])
+def servir_imagem(nome_arquivo):
+    return send_from_directory(os.path.join(app.root_path, "imagens"), nome_arquivo)
 
 @app.route("/perguntar",methods=['POST'])
 def enviar_pergunta():
